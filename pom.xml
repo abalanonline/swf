@@ -36,17 +36,6 @@
 
   <dependencies>
 
-    <!-- Flagstone Software Translate SWF -->
-    <!-- http://www.flagstonesoftware.com/translate/index.html -->
-    <!-- Berkeley Software Distribution (BSD) License -->
-    <dependency>
-      <groupId>com.flagstone</groupId>
-      <artifactId>translate</artifactId>
-      <version>2.0.5</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/translate-2.0.5.jar</systemPath>
-    </dependency>
-
     <!-- Flagstone Software Transform SWF for Java -->
     <!-- http://www.flagstonesoftware.com/transform/index.html -->
     <!-- Berkeley Software Distribution (BSD) License -->
@@ -56,6 +45,17 @@
       <version>2.3.4</version>
       <scope>system</scope>
       <systemPath>${project.basedir}/lib/transform-2.3.4.jar</systemPath>
+    </dependency>
+
+    <!-- Flagstone Software Translate SWF (ActionScript) -->
+    <!-- http://www.flagstonesoftware.com/translate/index.html -->
+    <!-- Berkeley Software Distribution (BSD) License -->
+    <dependency>
+      <groupId>com.flagstone</groupId>
+      <artifactId>translate</artifactId>
+      <version>2.0.5</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/translate-2.0.5.jar</systemPath>
     </dependency>
 
     <!-- lombok -->

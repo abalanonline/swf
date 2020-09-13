@@ -32,6 +32,9 @@ import com.flagstone.translate.ASParser;
 import lombok.SneakyThrows;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @SuppressWarnings({"AssertWithSideEffects", "ConstantConditions"})
 public class Application {
@@ -49,12 +52,20 @@ public class Application {
     int height = 4000;
 
     FSMovie movie = new FSMovie();
+    //FSMovie movie = new FSMovie("UTF8", "FWS", 4, new FSBounds(0, 0, 320, 240), 15f, new ArrayList<>());
     ASParser parser = new ASParser();
     FSShapeConstructor canvas = new FSShapeConstructor();
 
     // Compile the script containing the event handlers
-    ASNode node = parser.parse(new File("src/main/resources/script.as"));
-    byte[] bytes = node.encode(movie.getVersion());
+    ASNode node = parser.parse(
+        "s = fscommand2 (\"GetTimeSeconds\");\n" +
+        "if(s ne timeSecondsInt)\n" +
+        "{\n" +
+        "  timeSecondsInt = s;\n" +
+        "}\n");
+    byte[] bytes = node.encode(5);
+    String byteCode = IntStream.range(0, bytes.length).map(i -> bytes[i] & 0xFF)
+        .mapToObj(b -> String.format("%02x ", b)).collect(Collectors.joining());
 
     int shapeId = movie.newIdentifier();
     int clipId = movie.newIdentifier();
