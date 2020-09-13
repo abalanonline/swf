@@ -30,6 +30,7 @@
  */
 package com.flagstone.translate;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -696,6 +697,7 @@ public final class ASNode extends Object
         static final int Throw                = 42;
         static final int Cast                 = 43;
         static final int Implements           = 44;
+        static final int fscommand2           = 0x2D;
         static final int RandomNumber         = 48;
         static final int MBStringLength       = 49;
         static final int CharToAscii          = 50;
@@ -1103,16 +1105,18 @@ public final class ASNode extends Object
          */
         int length(int version, String encoding)
         {
-            length = 3;
+            length = 0;
         
             for (Iterator i=values.iterator(); i.hasNext();)
             {
+                length += 3;
                 Object anObject = i.next();
         
                 if (anObject instanceof Boolean)
                     length += 2;
                 else if (anObject instanceof Integer)
-                    length += 5;
+                    //length += 5;
+                    length += ((Integer)anObject).toString().length() + 2; // push int as string
                 else if (anObject instanceof Double)
                     length += 9;
                 else if (anObject instanceof String) 
@@ -1147,13 +1151,13 @@ public final class ASNode extends Object
          */
         void encode(Coder coder)
         {
-            coder.encode(this.type, 1);
-            coder.encode(length-3, 2);
 
             for (Iterator i=values.iterator(); i.hasNext();)
             {
                 Object anObject = i.next();
-        
+                coder.encode(this.type, 1);
+                coder.encode(anObject.toString().getBytes(StandardCharsets.UTF_8).length + 2, 2);
+
                 if (anObject instanceof Boolean)
                 {
                     coder.encode(5, 1);
@@ -1161,8 +1165,10 @@ public final class ASNode extends Object
                 }
                 else if (anObject instanceof Integer)
                 {
-                    coder.encode(7, 1);
-                    coder.encode(((Integer)anObject).intValue(), 4);
+                    //coder.encode(7, 1);
+                    //coder.encode(((Integer)anObject).intValue(), 4);
+                    coder.encode(0, 1);
+                    coder.encode(((Integer)anObject).toString());
                 }
                 else if (anObject instanceof Double)
                 {
@@ -1897,6 +1903,7 @@ public final class ASNode extends Object
         functions.put("duplicateMovieClip", new Boolean(false));
         functions.put("eval", new Boolean(true));
         functions.put("fscommand", new Boolean(false));
+        functions.put("fscommand2", new Boolean(false));
         functions.put("getProperty", new Boolean(true));
         functions.put("getTimer", new Boolean(true));
         functions.put("getURL", new Boolean(false));
@@ -2466,7 +2473,7 @@ public final class ASNode extends Object
         ArrayList array = new ArrayList();
         
         reorder(info);
-        findStrings(info);
+        //findStrings(info);
         generate(info, array);
 
         return array;
@@ -4501,6 +4508,10 @@ public final class ASNode extends Object
                 addAction(actions, Action.Equals);
                 addAction(actions, Action.Not);
                 break;
+            case StringNotEqual:
+                addAction(actions, Action.StringEquals);
+                addAction(actions, Action.Not);
+                break;
             case LessThan:
                 addAction(actions, Action.Less);
                 break;
@@ -4844,6 +4855,14 @@ public final class ASNode extends Object
                     
                     actions.add(new ValueAction(Action.GetUrl2, Action.MovieToLevel));
                 }
+            }
+            else if (sValue.equals("fscommand2"))
+            {
+                Arrays.stream(children).map(ASNode::getStringValue).forEach(s -> addLiteral(actions, s)); // FIXME: 2020-09-13 stack order
+                addLiteral(actions, children.length);
+                addAction(actions, Action.fscommand2);
+
+                boolean isCommandString = children[0].type == StringLiteral &&  children[0].sValue != null;
             }
             else if (sValue.equals("getProperty"))
             {
