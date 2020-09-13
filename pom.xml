@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2020 Aleksei Balan
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+    https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>ab</groupId>
+  <artifactId>swf</artifactId>
+  <version>0.0.0</version>
+
+  <properties>
+    <java.version>1.8</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+
+  <dependencies>
+
+    <!-- Flagstone Software Translate SWF -->
+    <!-- http://www.flagstonesoftware.com/translate/index.html -->
+    <!-- Berkeley Software Distribution (BSD) License -->
+    <dependency>
+      <groupId>com.flagstone</groupId>
+      <artifactId>translate</artifactId>
+      <version>2.0.5</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/translate-2.0.5.jar</systemPath>
+    </dependency>
+
+    <!-- Flagstone Software Transform SWF for Java -->
+    <!-- http://www.flagstonesoftware.com/transform/index.html -->
+    <!-- Berkeley Software Distribution (BSD) License -->
+    <dependency>
+      <groupId>com.flagstone</groupId>
+      <artifactId>transform</artifactId>
+      <version>2.3.4</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/transform-2.3.4.jar</systemPath>
+    </dependency>
+
+    <!-- lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.12</version>
+      <scope>provided</scope>
+    </dependency>
+
+  </dependencies>
+
+
+  <build>
+    <finalName>${project.artifactId}</finalName>
+  </build>
+
+</project>

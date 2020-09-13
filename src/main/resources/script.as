@@ -1,0 +1,3 @@
+onClipEvent(mouseDown) {
+  startDrag(this);
+}
