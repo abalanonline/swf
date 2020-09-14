@@ -4513,7 +4513,7 @@ public final class ASNode extends Object
                 addAction(actions, Action.Not);
                 break;
             case LessThan:
-                addAction(actions, Action.Less);
+                addAction(actions, Action.IntegerLess);
                 break;
             case GreaterThan:
                 switch (info.version)
@@ -4521,7 +4521,7 @@ public final class ASNode extends Object
                     case 5:
                         children[1].generate(info, actions);
                         children[0].generate(info, actions);
-                        addAction(actions, Action.Less);
+                        addAction(actions, Action.IntegerLess);
                         
                         if (parent.type != If)
                             addAction(actions, Action.Not);
@@ -4858,7 +4858,12 @@ public final class ASNode extends Object
             }
             else if (sValue.equals("fscommand2"))
             {
-                Arrays.stream(children).map(ASNode::getStringValue).forEach(s -> addLiteral(actions, s)); // FIXME: 2020-09-13 stack order
+                for (int i = children.length - 1; i >= 0; i--) {
+                    addLiteral(actions, children[i].getStringValue());
+                    if (children[i].type == Identifier) {
+                        addAction(actions, Action.GetVariable);
+                    }
+                }
                 addLiteral(actions, children.length);
                 addAction(actions, Action.fscommand2);
 

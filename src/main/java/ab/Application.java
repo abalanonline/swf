@@ -32,6 +32,8 @@ import com.flagstone.translate.ASParser;
 import lombok.SneakyThrows;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -57,15 +59,17 @@ public class Application {
     FSShapeConstructor canvas = new FSShapeConstructor();
 
     // Compile the script containing the event handlers
-    ASNode node = parser.parse(
-        "s = fscommand2 (\"GetTimeSeconds\");\n" +
-        "if(s ne timeSecondsInt)\n" +
-        "{\n" +
-        "  timeSecondsInt = s;\n" +
-        "}\n");
+    ASNode node = parser.parse(new File("src/main/resources/script.as"));
     byte[] bytes = node.encode(5);
+
     String byteCode = IntStream.range(0, bytes.length).map(i -> bytes[i] & 0xFF)
         .mapToObj(b -> String.format("%02x ", b)).collect(Collectors.joining());
+    StringBuilder sbByteCode = new StringBuilder("#hexdata\n\n");
+    for (int i = 0; i < bytes.length; i++) {
+      sbByteCode.append(String.format("%02x ", bytes[i])).append(i % 8 == 7 ? "\n" : "");
+    }
+    byteCode = sbByteCode.append("\n").toString();
+    Files.write(Paths.get("target/script.bytecode"), byteCode.getBytes());
 
     int shapeId = movie.newIdentifier();
     int clipId = movie.newIdentifier();
