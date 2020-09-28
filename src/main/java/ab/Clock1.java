@@ -20,12 +20,15 @@ import com.flagstone.transform.FSBounds;
 import com.flagstone.transform.FSColorTable;
 import com.flagstone.transform.FSDefineFont2;
 import com.flagstone.transform.FSDefineTextField;
+import com.flagstone.transform.FSDoAction;
 import com.flagstone.transform.FSMovie;
 import com.flagstone.transform.FSPlaceObject2;
 import com.flagstone.transform.FSSetBackgroundColor;
 import com.flagstone.transform.FSShowFrame;
+import com.flagstone.translate.ASParser;
 import lombok.SneakyThrows;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class Clock1 {
@@ -79,6 +82,15 @@ public class Clock1 {
     movie.add(new FSPlaceObject2(textSec.getIdentifier(), 20, -20 * 20, 60 * 20));
     movie.add(new FSPlaceObject2(textBat.getIdentifier(), 30, -20 * 20, 60 * 20));
 
+    movie.add(new FSShowFrame());
+    movie.add(new FSDoAction(new ASParser().parse(new File("src/main/resources/clock1.as")).encode(5)));
+    movie.add(new FSShowFrame());
+    byte[] scriptBack = new ASParser().parse(new File("src/main/resources/clock1back.as")).encode(5);
+    scriptBack = new byte[]{ // compilation failed
+        (byte)0x96, (byte)0x02, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x96, (byte)0x03, (byte)0x00,
+        (byte)0x00, (byte)0x34, (byte)0x00, (byte)0x22, (byte)0x96, (byte)0x03, (byte)0x00, (byte)0x00,
+        (byte)0x31, (byte)0x00, (byte)0x0b, (byte)0x9f, (byte)0x01, (byte)0x00, (byte)0x01, (byte)0x00};
+    movie.add(new FSDoAction(scriptBack));
     movie.add(new FSShowFrame());
 
     return movie.encode();
