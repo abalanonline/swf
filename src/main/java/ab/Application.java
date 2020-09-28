@@ -50,6 +50,9 @@ public class Application {
 
   @SneakyThrows
   public static void main(String[] args) {
+
+    Files.write(Paths.get("target/clock1.swf"), Clock1.construct());
+
     int width = 4000;
     int height = 4000;
 
