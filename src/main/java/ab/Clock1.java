@@ -29,24 +29,55 @@ import lombok.SneakyThrows;
 import java.util.ArrayList;
 
 public class Clock1 {
+
+  public static FSDefineTextField newTextField(FSMovie movie, FSDefineFont2 font) {
+    FSDefineTextField textField = new FSDefineTextField(movie.newIdentifier(), movie.getFrameSize());
+    textField.setFontIdentifier(font.getIdentifier());
+    textField.setColor(FSColorTable.darkred());
+    textField.setReadOnly(true);
+    return textField;
+  }
+
   @SneakyThrows
   public static byte[] construct() {
     FSMovie movie = new FSMovie("UTF8", "FWS", 4, new FSBounds(0, 0, 320 * 20, 240 * 20), 2f, new ArrayList<>());
 
     movie.add(new FSSetBackgroundColor(FSColorTable.black()));
 
-    FSDefineFont2 font = new FSDefineFont2(movie.newIdentifier(), "_typewriter");
-    movie.add(font);
+    FSDefineFont2 sans = new FSDefineFont2(movie.newIdentifier(), "_sans");
+    movie.add(sans);
+    FSDefineFont2 serif = new FSDefineFont2(movie.newIdentifier(), "_serif");
+    movie.add(serif);
+    FSDefineFont2 mono = new FSDefineFont2(movie.newIdentifier(), "_typewriter");
+    movie.add(mono);
 
-    FSDefineTextField textField = new FSDefineTextField(movie.newIdentifier(), new FSBounds(0, 0, 320 * 20, 240 * 20));
-    textField.setFontIdentifier(font.getIdentifier());
-    textField.setColor(FSColorTable.gray());
-    textField.setInitialText("Flash App");
-    textField.setFontHeight(24 * 20);
-    textField.setReadOnly(true);
-    movie.add(textField);
+    FSDefineTextField textHrMin = newTextField(movie, sans);
+    textHrMin.setBounds(new FSBounds(40 * 20, 0, 280 * 20, 100 * 20));
+    textHrMin.setFontHeight(90 * 20);
+    textHrMin.setAlignment(FSDefineTextField.AlignCenter);
+    textHrMin.setVariableName("timeHoursMinutes");
+    textHrMin.setInitialText("23:35");
+    movie.add(textHrMin);
 
-    movie.add(new FSPlaceObject2(textField.getIdentifier(), 10, 0, 0));
+    FSDefineTextField textSec = newTextField(movie, sans);
+    textSec.setBounds(new FSBounds(280 * 20, 62 * 20, 320 * 20, 100 * 20));
+    textSec.setFontHeight(32 * 20);
+    textSec.setAlignment(FSDefineTextField.AlignLeft);
+    textSec.setVariableName("timeSeconds");
+    textSec.setInitialText("59");
+    movie.add(textSec);
+
+    FSDefineTextField textBat = newTextField(movie, sans);
+    textBat.setBounds(new FSBounds(280 * 20, 21 * 20, 320 * 20, 60 * 20));
+    textBat.setFontHeight(32 * 20);
+    textBat.setAlignment(FSDefineTextField.AlignLeft);
+    textBat.setVariableName("batteryLevel");
+    textBat.setInitialText("IIII");
+    movie.add(textBat);
+
+    movie.add(new FSPlaceObject2(textHrMin.getIdentifier(), 10, -20 * 20, 60 * 20));
+    movie.add(new FSPlaceObject2(textSec.getIdentifier(), 20, -20 * 20, 60 * 20));
+    movie.add(new FSPlaceObject2(textBat.getIdentifier(), 30, -20 * 20, 60 * 20));
 
     movie.add(new FSShowFrame());
 
