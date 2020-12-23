@@ -52,6 +52,7 @@ public class Application {
   public static void main(String[] args) {
 
     Files.write(Paths.get("target/clock1.swf"), Clock1.construct());
+    Files.write(Paths.get("target/clock2.swf"), Clock2.construct());
 
     int width = 4000;
     int height = 4000;
