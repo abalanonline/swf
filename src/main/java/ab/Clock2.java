@@ -17,23 +17,30 @@
 package ab;
 
 import com.flagstone.transform.FSBounds;
+import com.flagstone.transform.FSButton;
 import com.flagstone.transform.FSColor;
+import com.flagstone.transform.FSColorTable;
 import com.flagstone.transform.FSDefineButton;
 import com.flagstone.transform.FSDefineButton2;
 import com.flagstone.transform.FSDefineFont;
+import com.flagstone.transform.FSDefineFont2;
 import com.flagstone.transform.FSDefineMovieClip;
 import com.flagstone.transform.FSDefineShape;
 import com.flagstone.transform.FSDefineShape3;
 import com.flagstone.transform.FSDefineText;
+import com.flagstone.transform.FSDefineTextField;
+import com.flagstone.transform.FSDoAction;
 import com.flagstone.transform.FSFontInfo2;
 import com.flagstone.transform.FSMovie;
 import com.flagstone.transform.FSMovieObject;
 import com.flagstone.transform.FSPlaceObject2;
 import com.flagstone.transform.FSSetBackgroundColor;
 import com.flagstone.transform.FSShowFrame;
+import com.flagstone.translate.ASParser;
 import lombok.SneakyThrows;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -44,8 +51,10 @@ import java.util.stream.Collectors;
 
 public class Clock2 {
 
-  public static final int W = 550;
-  public static final int H = 400;
+  public static final int W = 16;
+  public static final int H = 12;
+  public static final double SCALE = H / 400.0; // 550x400 - original size
+  public static final int DX = -40;
 
   public static Set<Integer> getRequiredIdentifiers(Object object, Map<Integer, FSMovieObject> movieObjects) {
     Set<Integer> ids = new LinkedHashSet<>();
@@ -53,6 +62,12 @@ public class Clock2 {
       FSDefineMovieClip movieClip = (FSDefineMovieClip) object;
       for (Object o : movieClip.getObjects()) {
         ids.addAll(getRequiredIdentifiers(o, movieObjects));
+      }
+    }
+    if (object instanceof FSDefineButton2) {
+      FSDefineButton2 button = (FSDefineButton2) object;
+      for (Object buttonRecord : button.getButtonRecords()) {
+        ids.add(((FSButton) buttonRecord).getIdentifier());
       }
     }
     if (object instanceof FSPlaceObject2) {
@@ -116,8 +131,7 @@ public class Clock2 {
     }
 
     // make a list of required objects
-    placeObjects.remove(2); // moon, we will put it back later
-    placeObjects.remove(0); // music
+    placeObjects.remove(0); // 0=music, clouds, moon, cat, clouds
     Set<Integer> requiredObjectIds = new LinkedHashSet<>();
     for (FSPlaceObject2 placeObject : placeObjects) {
       requiredObjectIds.addAll(getRequiredIdentifiers(placeObject, movieObjects));
@@ -126,10 +140,49 @@ public class Clock2 {
         requiredObjectIds.stream().filter(i -> i > 0).map(movieObjects::get).collect(Collectors.toList());
 
     // create a new movie
-    FSMovie movie = new FSMovie("UTF8", "FWS", 4, new FSBounds(0, 0, W * 20, H * 20), sc.getFrameRate(), new ArrayList<>());
+    FSMovie movie = new FSMovie("UTF8", "FWS", 4, new FSBounds(0, 0, W * 20, H * 20),
+        sc.getFrameRate() / 2, new ArrayList<>()); // 50% 12fps slowcat =^_^=
     movie.add(new FSSetBackgroundColor(new FSColor(0x00, 0x00, 0x66, 0xFF))); // navy blue
+
+    FSDefineFont2 sans = new FSDefineFont2(movie.newIdentifier(), "_sans");
+    movie.add(sans);
+
+    FSDefineTextField textHrMin = new FSDefineTextField(movie.newIdentifier(), movie.getFrameSize());
+    textHrMin.setFontIdentifier(sans.getIdentifier());
+    textHrMin.setColor(FSColorTable.yellow());
+    textHrMin.setReadOnly(true);
+    textHrMin.setBounds(new FSBounds(0, 0, W * 20, H * 20));
+    textHrMin.setFontHeight(H * 4);
+    textHrMin.setAlignment(FSDefineTextField.AlignLeft);
+    textHrMin.setVariableName("timeHoursMinutes");
+    textHrMin.setInitialText("23:35");
+    movie.add(textHrMin);
+    int textHrMinX = W * 11 + DX; // 12
+    int textHrMinY = H * 14 + DX; // 15
+    movie.add(new FSPlaceObject2(textHrMin.getIdentifier(), 45, textHrMinX, textHrMinY));
+
+    FSDefineTextField textShadow = new FSDefineTextField(textHrMin);
+    textShadow.setIdentifier(movie.newIdentifier());
+    textShadow.setColor(FSColorTable.black());
+    movie.add(textShadow);
+    movie.add(new FSPlaceObject2(textShadow.getIdentifier(), 40, W / 5 + textHrMinX, W / 5 + textHrMinY));
+
     movie.add(new ArrayList<>(requiredObjects));
     movie.add(new ArrayList<>(placeObjects));
+    for (FSPlaceObject2 placeObject : placeObjects) {
+      float[][] transformMatrix = placeObject.getTransform().getMatrix();
+      double scale = placeObject.getLayer() == 18 ? SCALE * 0.6 : SCALE;
+      transformMatrix[0][0] *= scale;
+      transformMatrix[0][2] *= scale;
+      transformMatrix[1][1] *= scale;
+      transformMatrix[1][2] *= scale;
+      transformMatrix[0][2] -= W / 2; // 2.5% move to adjust 3% difference between 550x400 and 320x240
+    }
+
+    movie.add(new FSShowFrame());
+    movie.add(new FSShowFrame());
+    movie.add(new FSDoAction(new ASParser().parse(new File("src/main/resources/clock1.as")).encode(5)));
+    movie.add(new FSShowFrame());
     movie.add(new FSShowFrame());
     return movie.encode();
   }
