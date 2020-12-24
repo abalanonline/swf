@@ -15,6 +15,6 @@ Clock made from SpeedyCat flash animation. Both Flash Lite and Flash 5+ supporte
 
 ![clock2](src/main/resources/clock2.jpg)
 
-It can be [played in browsers](src/main/resources/spcclock.swf) for one week until the timer hit EOL date.
+It can be [played in browsers](https://abalanonline.github.io/swf/) (tap F11) for one week until the timer hit EOL date.
 
 Merry Christmas.
