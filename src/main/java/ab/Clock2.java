@@ -51,8 +51,8 @@ import java.util.stream.Collectors;
 
 public class Clock2 {
 
-  public static final int W = 16;
-  public static final int H = 12;
+  public static final int W = 320;
+  public static final int H = 240;
   public static final double SCALE = H / 400.0; // 550x400 - original size
   public static final int DX = -40;
 
@@ -108,7 +108,7 @@ public class Clock2 {
   }
 
   @SneakyThrows
-  public static byte[] construct() {
+  public static byte[] construct(int version, String actionScriptFile) {
     // load movie
     byte[] scBytes = new byte[710241];
     DataInputStream dataInputStream =
@@ -140,7 +140,7 @@ public class Clock2 {
         requiredObjectIds.stream().filter(i -> i > 0).map(movieObjects::get).collect(Collectors.toList());
 
     // create a new movie
-    FSMovie movie = new FSMovie("UTF8", "FWS", 4, new FSBounds(0, 0, W * 20, H * 20),
+    FSMovie movie = new FSMovie("UTF8", "FWS", version, new FSBounds(0, 0, W * 20, H * 20),
         sc.getFrameRate() / 2, new ArrayList<>()); // 50% 12fps slowcat =^_^=
     movie.add(new FSSetBackgroundColor(new FSColor(0x00, 0x00, 0x66, 0xFF))); // navy blue
 
@@ -181,7 +181,7 @@ public class Clock2 {
 
     movie.add(new FSShowFrame());
     movie.add(new FSShowFrame());
-    movie.add(new FSDoAction(new ASParser().parse(new File("src/main/resources/clock1.as")).encode(5)));
+    movie.add(new FSDoAction(new ASParser().parse(new File("src/main/resources/" + actionScriptFile)).encode(5)));
     movie.add(new FSShowFrame());
     movie.add(new FSShowFrame());
     return movie.encode();

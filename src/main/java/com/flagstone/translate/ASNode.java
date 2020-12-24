@@ -1156,7 +1156,11 @@ public final class ASNode extends Object
             {
                 Object anObject = i.next();
                 coder.encode(this.type, 1);
-                coder.encode(anObject.toString().getBytes(StandardCharsets.UTF_8).length + 2, 2);
+                int pushLength = anObject.toString().getBytes(StandardCharsets.UTF_8).length + 2;
+                if (anObject instanceof Double) {
+                    pushLength = 9;
+                }
+                coder.encode(pushLength, 2);
 
                 if (anObject instanceof Boolean)
                 {

@@ -51,8 +51,13 @@ public class Application {
   @SneakyThrows
   public static void main(String[] args) {
 
-    Files.write(Paths.get("target/clock1.swf"), Clock1.construct());
-    Files.write(Paths.get("target/clock2.swf"), Clock2.construct());
+    // Flash Lite 1.1, Flash 4 ActionScript.
+    Files.write(Paths.get("target/clock1fl.swf"), Clock1.construct(4, "clock1fl11.as"));
+    Files.write(Paths.get("target/clock2fl.swf"), Clock2.construct(4, "clock1fl11.as"));
+
+    // Flash 5 ActionScript.
+    Files.write(Paths.get("target/clock1.swf"), Clock1.construct(5, "clock2f5.as"));
+    Files.write(Paths.get("target/clock2.swf"), Clock2.construct(5, "clock2f5.as"));
 
     int width = 4000;
     int height = 4000;

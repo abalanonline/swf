@@ -42,8 +42,8 @@ public class Clock1 {
   }
 
   @SneakyThrows
-  public static byte[] construct() {
-    FSMovie movie = new FSMovie("UTF8", "FWS", 4, new FSBounds(0, 0, 320 * 20, 240 * 20), 2f, new ArrayList<>());
+  public static byte[] construct(int version, String actionScriptFile) {
+    FSMovie movie = new FSMovie("UTF8", "FWS", version, new FSBounds(0, 0, 320 * 20, 240 * 20), 2f, new ArrayList<>());
 
     movie.add(new FSSetBackgroundColor(FSColorTable.black()));
 
@@ -83,7 +83,7 @@ public class Clock1 {
     movie.add(new FSPlaceObject2(textBat.getIdentifier(), 30, -20 * 20, 60 * 20));
 
     movie.add(new FSShowFrame());
-    movie.add(new FSDoAction(new ASParser().parse(new File("src/main/resources/clock1.as")).encode(5)));
+    movie.add(new FSDoAction(new ASParser().parse(new File("src/main/resources/" + actionScriptFile)).encode(5)));
     movie.add(new FSShowFrame());
     byte[] scriptBack = new ASParser().parse(new File("src/main/resources/clock1back.as")).encode(5);
     scriptBack = new byte[]{ // compilation failed
