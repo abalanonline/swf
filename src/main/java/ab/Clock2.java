@@ -130,6 +130,20 @@ public class Clock2 {
       }
     }
 
+    // replace button with shape
+    FSPlaceObject2 moon = placeObjects.get(2);
+    int oldId = moon.getIdentifier();
+    FSDefineButton2 button = (FSDefineButton2) movieObjects.get(oldId);
+    FSButton moonButtonUp = (FSButton) button.getButtonRecords().get(0);
+    int newId = moonButtonUp.getIdentifier();
+    moon.setIdentifier(newId);
+    // replace button with sprite
+    FSDefineMovieClip sprite = new FSDefineMovieClip(oldId);
+    sprite.add(new FSPlaceObject2(newId,
+        moonButtonUp.getLayer(), moonButtonUp.getTransform(), moonButtonUp.getColorTransform()));
+    movieObjects.put(oldId, sprite);
+    moon.setIdentifier(oldId);
+
     // make a list of required objects
     placeObjects.remove(0); // 0=music, clouds, moon, cat, clouds
     Set<Integer> requiredObjectIds = new LinkedHashSet<>();
